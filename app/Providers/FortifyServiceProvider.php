@@ -40,6 +40,29 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
+        
+        // Custom redirect after login
+        Fortify::authenticateUsing(function (Request $request) {
+            $request->validate([
+                config('fortify.email') => 'required|email',
+                'password' => 'required',
+            ]);
+            
+            $user = \App\Models\User::where(config('fortify.email'), $request->email)->first();
+            
+            if (!$user || !\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                throw new \Illuminate\Validation\ValidationException('The provided credentials are incorrect.');
+            }
+            
+            // Set intended URL based on user role
+            if ($user->is_admin) {
+                session(['url.intended' => '/admin/dashboard']);
+            } else {
+                session(['url.intended' => '/dashboard']);
+            }
+            
+            return $user;
+        });
     }
 
     /**

@@ -9,7 +9,7 @@ import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, usePage } from '@inertiajs/react';
 
 type Props = {
     status?: string;
@@ -22,12 +22,28 @@ export default function Login({
     canResetPassword,
     canRegister,
 }: Props) {
+    const { props } = usePage();
+    const flash = props.flash as { error?: string; success?: string } || {};
+
     return (
         <AuthLayout
             title="Log in to your account"
             description="Enter your email and password below to log in"
         >
             <Head title="Log in" />
+
+            {/* Flash Messages */}
+            {flash.error && (
+                <div className="mb-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <p className="text-sm text-destructive">{flash.error}</p>
+                </div>
+            )}
+
+            {flash.success && (
+                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-sm text-green-600">{flash.success}</p>
+                </div>
+            )}
 
             <Form
                 {...store.form()}

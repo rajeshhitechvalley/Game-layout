@@ -1,13 +1,8 @@
 import { Play, Star, Users } from "lucide-react";
+import type { HeroGame } from '@/types';
 
 interface HeroSectionProps {
-  game: {
-    title: string;
-    description: string;
-    image: string;
-    rating: number;
-    players: string;
-  };
+  game: HeroGame;
 }
 
 const HeroSection = ({ game }: HeroSectionProps) => {

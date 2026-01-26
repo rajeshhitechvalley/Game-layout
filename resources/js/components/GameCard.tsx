@@ -1,14 +1,9 @@
-import { Play, Star, Users } from "lucide-react";
+import { Play, Star, Users, ExternalLink } from "lucide-react";
+import { Link } from '@inertiajs/react';
+import type { GameCard as GameCardType } from '@/types';
 
 interface GameCardProps {
-  game: {
-    id: number;
-    title: string;
-    image: string;
-    category: string;
-    rating: number;
-    plays: string;
-  };
+  game: GameCardType & { game_url?: string };
 }
 
 const GameCard = ({ game }: GameCardProps) => {
@@ -24,9 +19,18 @@ const GameCard = ({ game }: GameCardProps) => {
         
         {/* Play Overlay */}
         <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <div className="w-16 h-16 rounded-full gradient-bg-primary flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300">
-            <Play className="w-8 h-8 text-background fill-current ml-1" />
-          </div>
+          {game.game_url ? (
+            <Link
+              href={`/games/${game.id}/play`}
+              className="w-16 h-16 rounded-full gradient-bg-primary flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300"
+            >
+              <Play className="w-8 h-8 text-background fill-current ml-1" />
+            </Link>
+          ) : (
+            <div className="w-16 h-16 rounded-full gradient-bg-primary flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300">
+              <Play className="w-8 h-8 text-background fill-current ml-1" />
+            </div>
+          )}
         </div>
         
         {/* Category Badge */}
@@ -35,6 +39,15 @@ const GameCard = ({ game }: GameCardProps) => {
             {game.category}
           </span>
         </div>
+
+        {/* Play Button Indicator */}
+        {game.game_url && (
+          <div className="absolute top-3 right-3">
+            <div className="w-8 h-8 rounded-full bg-gaming-orange flex items-center justify-center">
+              <ExternalLink className="w-4 h-4 text-background" />
+            </div>
+          </div>
+        )}
       </div>
       
       {/* Info */}

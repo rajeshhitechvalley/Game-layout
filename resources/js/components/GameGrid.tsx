@@ -1,17 +1,9 @@
 import GameCard from "./GameCard";
-
-interface Game {
-  id: number;
-  title: string;
-  image: string;
-  category: string;
-  rating: number;
-  plays: string;
-}
+import type { GameCard as GameCardType } from '@/types';
 
 interface GameGridProps {
   title: string;
-  games: Game[];
+  games: (GameCardType & { game_url?: string })[];
   icon?: string;
 }
 
