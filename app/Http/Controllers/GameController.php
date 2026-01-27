@@ -12,15 +12,39 @@ class GameController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $games = Game::where('active', true)
-            ->orderBy('featured', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->paginate(12);
+        $query = Game::where('active', true);
+        
+        // Handle category filtering
+        if ($request->has('category') && $request->category !== '') {
+            $query->where('category', $request->category);
+        }
+        
+        // Handle sorting
+        $sort = $request->get('sort', 'created_at');
+        switch ($sort) {
+            case 'trending':
+                $query->orderBy('plays', 'desc');
+                break;
+            case 'new':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'featured':
+                $query->orderBy('featured', 'desc');
+                break;
+            default:
+                $query->orderBy('featured', 'desc')
+                      ->orderBy('created_at', 'desc');
+                break;
+        }
+        
+        $games = $query->paginate(12);
 
         return Inertia::render('Games/Index', [
             'games' => $games,
+            'sort' => $request->get('sort'),
+            'category' => $request->get('category'),
         ]);
     }
 

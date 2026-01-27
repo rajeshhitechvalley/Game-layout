@@ -14,6 +14,11 @@ interface WelcomeProps {
 }
 
 const Index = ({ featuredGame, trendingGames, newGames, actionGames }: WelcomeProps) => {
+    const handleCategoryChange = (category: string) => {
+        // Navigate to games page with category filter
+        window.location.href = category === 'all' ? '/games' : `/games?category=${category}`;
+    };
+
     return (
         <>
             <Head title="Home" />
@@ -21,7 +26,7 @@ const Index = ({ featuredGame, trendingGames, newGames, actionGames }: WelcomePr
                 <Header />
                 <main>
                     {featuredGame && <HeroSection game={featuredGame} />}
-                    <CategoryPills />
+                    <CategoryPills onCategoryChange={handleCategoryChange} />
                     {trendingGames.length > 0 && <GameGrid title="Trending Now" games={trendingGames} icon="🔥" />}
                     {newGames.length > 0 && <GameGrid title="New Games" games={newGames} icon="✨" />}
                     {actionGames.length > 0 && <GameGrid title="Action & Adventure" games={actionGames} icon="⚔️" />}

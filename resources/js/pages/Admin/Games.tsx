@@ -169,28 +169,29 @@ export default function AdminGames({ games }: AdminGamesProps) {
                                                 <Link
                                                     href={`/games/${game.id}`}
                                                     target="_blank"
-                                                    className="p-2 rounded-lg hover:bg-muted transition-colors"
+                                                    className="action-button-sm"
                                                     title="View Game"
                                                 >
                                                     <Eye className="w-4 h-4" />
                                                 </Link>
                                                 <Link
                                                     href={`/games/${game.id}/edit`}
-                                                    className="p-2 rounded-lg hover:bg-muted transition-colors"
+                                                    className="action-button-sm"
                                                     title="Edit Game"
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </Link>
                                                 <Link
                                                     href={`/admin/games/${game.id}/toggle-featured`}
-                                                    className="p-2 rounded-lg hover:bg-muted transition-colors"
+                                                    className="action-button-sm"
                                                     title={game.featured ? "Remove from Featured" : "Make Featured"}
                                                 >
-                                                    <Star className={`w-4 h-4 ${game.featured ? 'text-gaming-orange fill-gaming-orange' : ''}`} />
+                                                    <Star className={`w-4 h-4 ${game.featured ? 'text-background fill-current' : 'text-background'}`} />
                                                 </Link>
                                                 <Link
                                                     href={`/admin/games/${game.id}/delete`}
-                                                    className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
+                                                    className="action-button-sm bg-destructive hover:bg-destructive/90"
+                                                    style={{backgroundImage: 'none'}}
                                                     title="Delete Game"
                                                 >
                                                     <Trash2 className="w-4 h-4" />

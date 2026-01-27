@@ -50,12 +50,17 @@ const actionGames = [
 ];
 
 const Index = () => {
+  const handleCategoryChange = (category: string) => {
+    // Navigate to games page with category filter
+    window.location.href = category === 'all' ? '/games' : `/games?category=${category}`;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main>
         <HeroSection game={featuredGame} />
-        <CategoryPills />
+        <CategoryPills onCategoryChange={handleCategoryChange} />
         <GameGrid title="Trending Now" games={trendingGames} icon="🔥" />
         <GameGrid title="New Games" games={newGames} icon="✨" />
         <GameGrid title="Action & Adventure" games={actionGames} icon="⚔️" />
