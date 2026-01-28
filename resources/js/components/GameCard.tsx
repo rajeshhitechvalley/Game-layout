@@ -1,5 +1,6 @@
 import { Play, Star, Users, ExternalLink } from "lucide-react";
 import { Link } from '@inertiajs/react';
+import { useState } from 'react';
 import type { GameCard as GameCardType } from '@/types';
 
 interface GameCardProps {
@@ -7,10 +8,16 @@ interface GameCardProps {
 }
 
 const GameCard = ({ game }: GameCardProps) => {
+  const [isTouched, setIsTouched] = useState(false);
+
   return (
     <div className="game-card group">
       {/* Image Container */}
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div 
+        className="relative aspect-[4/3] overflow-hidden"
+        onTouchStart={() => setIsTouched(true)}
+        onTouchEnd={() => setTimeout(() => setIsTouched(false), 300)}
+      >
         <img
           src={game.image}
           alt={game.title}
@@ -18,16 +25,22 @@ const GameCard = ({ game }: GameCardProps) => {
         />
         
         {/* Play Overlay */}
-        <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+        <div className={`absolute inset-0 bg-background/60 transition-opacity duration-300 flex items-center justify-center ${
+          isTouched || 'group-hover:opacity-100 opacity-0'
+        }`}>
           {game.game_url ? (
             <Link
-              href={`/games/${game.slug || game.id}/play`}
-              className="w-16 h-16 rounded-full gradient-bg-primary flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300"
+              href={`/games/${game.slug}/play`}
+              className={`w-16 h-16 rounded-full gradient-bg-primary flex items-center justify-center transform transition-transform duration-300 ${
+                isTouched || 'group-hover:scale-100 scale-0'
+              }`}
             >
               <Play className="w-8 h-8 text-background fill-current ml-1" />
             </Link>
           ) : (
-            <div className="w-16 h-16 rounded-full gradient-bg-primary flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300">
+            <div className={`w-16 h-16 rounded-full gradient-bg-primary flex items-center justify-center transform transition-transform duration-300 ${
+              isTouched || 'group-hover:scale-100 scale-0'
+            }`}>
               <Play className="w-8 h-8 text-background fill-current ml-1" />
             </div>
           )}
