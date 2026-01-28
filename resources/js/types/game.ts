@@ -22,10 +22,12 @@ export interface Game {
 export interface GameCard {
     id: number;
     title: string;
+    slug: string;
     image: string;
     category: string;
     rating: number;
     plays: string;
+    game_url?: string;
 }
 
 export interface HeroGame {

@@ -39,7 +39,7 @@ const AppSidebarHeader = ({
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="lg:hidden"
+                            className="flex lg:hidden"
                             onClick={onMobileMenuToggle}
                         >
                             {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

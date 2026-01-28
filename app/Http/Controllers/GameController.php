@@ -168,8 +168,33 @@ class GameController extends Controller
         // Increment play count
         $game->increment('plays');
         
+        // Get recent games (excluding current game)
+        $recentGames = Game::where('active', true)
+            ->where('id', '!=', $game->id)
+            ->orderBy('updated_at', 'desc')
+            ->take(6)
+            ->get();
+            
+        // Get suggested games (same category, excluding current game)
+        $suggestedGames = Game::where('active', true)
+            ->where('category', $game->category)
+            ->where('id', '!=', $game->id)
+            ->orderBy('rating', 'desc')
+            ->take(6)
+            ->get();
+            
+        // Get trending games (excluding current game)
+        $trendingGames = Game::where('active', true)
+            ->where('id', '!=', $game->id)
+            ->orderBy('plays', 'desc')
+            ->take(6)
+            ->get();
+        
         return Inertia::render('Games/Play', [
             'game' => $game,
+            'recentGames' => $recentGames,
+            'suggestedGames' => $suggestedGames,
+            'trendingGames' => $trendingGames,
         ]);
     }
 

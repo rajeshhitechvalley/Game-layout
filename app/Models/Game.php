@@ -10,6 +10,14 @@ class Game extends Model
 {
     use HasFactory;
 
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     protected $fillable = [
         'user_id',
         'title',

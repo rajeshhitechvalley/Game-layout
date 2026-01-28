@@ -21,7 +21,7 @@ const GameCard = ({ game }: GameCardProps) => {
         <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
           {game.game_url ? (
             <Link
-              href={`/games/${game.id}/play`}
+              href={`/games/${game.slug || game.id}/play`}
               className="w-16 h-16 rounded-full gradient-bg-primary flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300"
             >
               <Play className="w-8 h-8 text-background fill-current ml-1" />

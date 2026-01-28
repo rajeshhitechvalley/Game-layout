@@ -78,6 +78,12 @@ const AppSidebar = ({ className, isOpen: propIsOpen, setIsOpen: propSetIsOpen }:
         { name: 'Favorites', href: '/favorites', icon: Heart },
     ];
 
+    // Admin navigation items
+    const adminNavigation = [
+        { name: 'Manage Games', href: '/admin/games', icon: Gamepad2 },
+        { name: 'Manage Users', href: '/admin/users', icon: Users },
+    ];
+
     const settings = [
         { name: 'Settings', href: '/settings', icon: Settings },
         { name: 'Help & Support', href: '/help', icon: HelpCircle },
@@ -190,6 +196,16 @@ const AppSidebar = ({ className, isOpen: propIsOpen, setIsOpen: propSetIsOpen }:
                             </h3>
                             {filteredNavigation.map((item) => renderNavItem(item))}
                         </div>
+
+                        {/* Admin Section - Only show for admin users */}
+                        {auth?.user?.is_admin && (
+                            <div className="space-y-2">
+                                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    Admin
+                                </h3>
+                                {adminNavigation.map((item) => renderNavItem(item))}
+                            </div>
+                        )}
 
                         <div className="space-y-2">
                             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
