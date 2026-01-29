@@ -24,7 +24,7 @@ const GameCard = ({ game }: GameCardProps) => {
     try {
       if (isBookmarked) {
         // Remove bookmark
-        await router.delete(`/bookmarks/${game.id}`, {
+        await router.delete(`/bookmarks/game/${game.id}`, {
           onSuccess: () => {
             setIsBookmarked(false);
             showToast('unbookmark', 'Removed from bookmarks', game.title);

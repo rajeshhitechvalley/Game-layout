@@ -84,17 +84,17 @@ export default function GameEdit({ game }: GameEditProps) {
                                 <select
                                     value={data.category}
                                     onChange={(e) => setData('category', e.target.value)}
-                                    className="search-input w-full"
+                                    className="search-input w-full bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                                 >
-                                    <option value="">Select a category</option>
-                                    <option value="Action">Action</option>
-                                    <option value="Adventure">Adventure</option>
-                                    <option value="Racing">Racing</option>
-                                    <option value="Puzzle">Puzzle</option>
-                                    <option value="Shooter">Shooter</option>
-                                    <option value="Sports">Sports</option>
-                                    <option value="RPG">RPG</option>
-                                    <option value=".io">.io</option>
+                                    <option value="" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Select a category</option>
+                                    <option value="Action" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Action</option>
+                                    <option value="Adventure" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Adventure</option>
+                                    <option value="Racing" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Racing</option>
+                                    <option value="Puzzle" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Puzzle</option>
+                                    <option value="Shooter" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Shooter</option>
+                                    <option value="Sports" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Sports</option>
+                                    <option value="RPG" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">RPG</option>
+                                    <option value=".io" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">.io</option>
                                 </select>
                                 {errors.category && (
                                     <p className="text-destructive text-sm mt-1">{errors.category}</p>

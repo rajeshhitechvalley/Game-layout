@@ -65,11 +65,11 @@ export default function BookmarksPage({ bookmarks, categories, currentCategory }
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                         >
-                            <option value="all">All Categories</option>
+                            <option value="all" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">All Categories</option>
                             {categories.map((category) => (
-                                <option key={category} value={category}>
+                                <option key={category} value={category} className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">
                                     {category}
                                 </option>
                             ))}

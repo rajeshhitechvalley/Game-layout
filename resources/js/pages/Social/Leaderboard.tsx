@@ -77,11 +77,11 @@ export default function LeaderboardPage({ leaderboard, games, currentGame, type 
                         <select
                             value={leaderboardType}
                             onChange={(e) => setLeaderboardType(e.target.value)}
-                            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                         >
-                            <option value="global">Global</option>
-                            <option value="personal">Personal</option>
-                            <option value="game">Game Specific</option>
+                            <option value="global" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Global</option>
+                            <option value="personal" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Personal</option>
+                            <option value="game" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Game Specific</option>
                         </select>
                     </div>
 
@@ -91,11 +91,11 @@ export default function LeaderboardPage({ leaderboard, games, currentGame, type 
                             <select
                                 value={selectedGame}
                                 onChange={(e) => setSelectedGame(e.target.value)}
-                                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                             >
-                                <option value="">All Games</option>
+                                <option value="" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">All Games</option>
                                 {games.map((game) => (
-                                    <option key={game.id} value={game.id}>
+                                    <option key={game.id} value={game.id} className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">
                                         {game.title}
                                     </option>
                                 ))}

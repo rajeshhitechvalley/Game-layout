@@ -156,14 +156,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/bookmarks', [\App\Http\Controllers\Profile\BookmarkController::class, 'store'])->name('bookmarks.store');
         Route::put('/bookmarks/{bookmark}', [\App\Http\Controllers\Profile\BookmarkController::class, 'update'])->name('bookmarks.update');
         Route::delete('/bookmarks/{bookmark}', [\App\Http\Controllers\Profile\BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+        Route::delete('/bookmarks/game/{game}', [\App\Http\Controllers\Profile\BookmarkController::class, 'destroyByGame'])->name('bookmarks.destroy.by-game');
         
         Route::get('/favorites', [\App\Http\Controllers\Profile\FavoriteController::class, 'index'])->name('favorites.index');
         Route::post('/favorites', [\App\Http\Controllers\Profile\FavoriteController::class, 'store'])->name('favorites.store');
         Route::delete('/favorites/{favorite}', [\App\Http\Controllers\Profile\FavoriteController::class, 'destroy'])->name('favorites.destroy');
         Route::post('/favorites/toggle', [\App\Http\Controllers\Profile\FavoriteController::class, 'toggle'])->name('favorites.toggle');
     });
-    
-    // Legacy routes for backward compatibility
+});
+
+// Legacy routes for backward compatibility (auth only, no email verification required)
+Route::middleware(['auth'])->group(function () {
     Route::get('/friends', [\App\Http\Controllers\Social\FriendController::class, 'index'])->name('friends');
     Route::get('/messages', [\App\Http\Controllers\Social\MessageController::class, 'index'])->name('messages');
     Route::get('/activity', [\App\Http\Controllers\Social\ActivityController::class, 'index'])->name('activity');
@@ -173,6 +176,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/bookmarks', [\App\Http\Controllers\Profile\BookmarkController::class, 'store'])->name('bookmarks.store');
     Route::put('/bookmarks/{bookmark}', [\App\Http\Controllers\Profile\BookmarkController::class, 'update'])->name('bookmarks.update');
     Route::delete('/bookmarks/{bookmark}', [\App\Http\Controllers\Profile\BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+    Route::delete('/bookmarks/game/{game}', [\App\Http\Controllers\Profile\BookmarkController::class, 'destroyByGame'])->name('bookmarks.destroy.by-game');
     Route::get('/favorites', [\App\Http\Controllers\Profile\FavoriteController::class, 'index'])->name('favorites');
     Route::post('/favorites', [\App\Http\Controllers\Profile\FavoriteController::class, 'store'])->name('favorites.store');
     Route::delete('/favorites/{favorite}', [\App\Http\Controllers\Profile\FavoriteController::class, 'destroy'])->name('favorites.destroy');

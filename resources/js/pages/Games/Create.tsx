@@ -101,20 +101,20 @@ export default function GameCreate() {
                                         <select
                                             value={data.category}
                                             onChange={(e) => setData('category', e.target.value)}
-                                            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                                             required
                                         >
-                                            <option value="">Select a category</option>
-                                            <option value="Action">Action</option>
-                                            <option value="Adventure">Adventure</option>
-                                            <option value="RPG">RPG</option>
-                                            <option value="Puzzle">Puzzle</option>
-                                            <option value="Racing">Racing</option>
-                                            <option value="Sports">Sports</option>
-                                            <option value="Shooter">Shooter</option>
-                                            <option value="Strategy">Strategy</option>
-                                            <option value="Simulation">Simulation</option>
-                                            <option value="Creative">Creative</option>
+                                            <option value="" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Select a category</option>
+                                            <option value="Action" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Action</option>
+                                            <option value="Adventure" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Adventure</option>
+                                            <option value="RPG" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">RPG</option>
+                                            <option value="Puzzle" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Puzzle</option>
+                                            <option value="Racing" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Racing</option>
+                                            <option value="Sports" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Sports</option>
+                                            <option value="Shooter" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Shooter</option>
+                                            <option value="Strategy" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Strategy</option>
+                                            <option value="Simulation" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Simulation</option>
+                                            <option value="Creative" className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">Creative</option>
                                         </select>
                                         {errors.category && <p className="text-sm text-destructive mt-1">{errors.category}</p>}
                                     </div>

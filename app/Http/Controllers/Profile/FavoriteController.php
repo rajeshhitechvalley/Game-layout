@@ -87,6 +87,10 @@ class FavoriteController extends Controller
             ]);
 
             $user = auth()->user();
+            if (!$user) {
+                return response()->json(['error' => 'User not authenticated'], 401);
+            }
+
             $gameId = $request->game_id;
 
             $favorite = Favorite::where('user_id', $user->id)
@@ -95,13 +99,13 @@ class FavoriteController extends Controller
 
             if ($favorite) {
                 $favorite->delete();
-                return back()->with('success', 'Removed from favorites');
+                return back()->with('success', 'Removed from favorites')->with('favorited', false);
             } else {
                 $favorite = Favorite::create([
                     'user_id' => $user->id,
                     'game_id' => $gameId,
                 ]);
-                return back()->with('success', 'Added to favorites');
+                return back()->with('success', 'Added to favorites')->with('favorited', true);
             }
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to toggle favorite.');

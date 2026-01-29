@@ -111,4 +111,28 @@ class BookmarkController extends Controller
 
         return back()->with('success', 'Bookmark removed!');
     }
+
+    public function destroyByGame($gameId)
+    {
+        try {
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['error' => 'User not authenticated'], 401);
+            }
+
+            $bookmark = Bookmark::where('user_id', $user->id)
+                               ->where('game_id', $gameId)
+                               ->first();
+
+            if (!$bookmark) {
+                return back()->with('error', 'Bookmark not found.');
+            }
+
+            $bookmark->delete();
+
+            return back()->with('success', 'Bookmark removed!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to remove bookmark.');
+        }
+    }
 }
