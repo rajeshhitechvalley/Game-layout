@@ -4,6 +4,8 @@ import HeroSection from "@/components/HeroSection";
 import CategoryPills from "@/components/CategoryPills";
 import GameGrid from "@/components/GameGrid";
 import Footer from "@/components/Footer";
+import Notifications from "@/components/Notifications";
+import Toaster from "@/components/Toaster";
 import type { Game } from '@/types';
 
 interface WelcomeProps {
@@ -33,6 +35,8 @@ const Index = ({ featuredGame, trendingGames, newGames, actionGames }: WelcomePr
                 </main>
                 <Footer />
             </div>
+            <Notifications />
+            <Toaster />
         </>
     );
 };

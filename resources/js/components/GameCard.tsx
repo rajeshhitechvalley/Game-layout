@@ -1,14 +1,84 @@
-import { Play, Star, Users, ExternalLink } from "lucide-react";
-import { Link } from '@inertiajs/react';
+import { Play, Star, Users, ExternalLink, Bookmark, Heart } from "lucide-react";
+import { Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import type { GameCard as GameCardType } from '@/types';
+import { showToast } from './Toaster';
 
 interface GameCardProps {
-  game: GameCardType & { game_url?: string };
+  game: GameCardType & { 
+    game_url?: string;
+    is_bookmarked?: boolean;
+    is_favorited?: boolean;
+  };
 }
 
 const GameCard = ({ game }: GameCardProps) => {
   const [isTouched, setIsTouched] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(game.is_bookmarked || false);
+  const [isFavorited, setIsFavorited] = useState(game.is_favorited || false);
+
+  const handleBookmark = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      if (isBookmarked) {
+        // Remove bookmark
+        await router.delete(`/bookmarks/${game.id}`, {
+          onSuccess: () => {
+            setIsBookmarked(false);
+            showToast('unbookmark', 'Removed from bookmarks', game.title);
+          },
+          onError: (errors: any) => {
+            console.error('Error removing bookmark:', errors);
+          }
+        });
+      } else {
+        // Add bookmark
+        await router.post('/bookmarks', {
+          game_id: game.id,
+          category: 'general',
+          notes: '',
+        }, {
+          onSuccess: () => {
+            setIsBookmarked(true);
+            showToast('bookmark', 'Added to bookmarks', game.title);
+          },
+          onError: (errors: any) => {
+            console.error('Error bookmarking game:', errors);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error bookmarking game:', error);
+    }
+  };
+
+  const handleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      await router.post('/favorites/toggle', {
+        game_id: game.id,
+      }, {
+        onSuccess: (response: any) => {
+          const favorited = response.props.favorited;
+          setIsFavorited(favorited);
+          if (favorited) {
+            showToast('favorite', 'Added to favorites', game.title);
+          } else {
+            showToast('unfavorite', 'Removed from favorites', game.title);
+          }
+        },
+        onError: (errors: any) => {
+          console.error('Error toggling favorite:', errors);
+        }
+      });
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
 
   return (
     <div className="game-card group">
@@ -53,14 +123,31 @@ const GameCard = ({ game }: GameCardProps) => {
           </span>
         </div>
 
-        {/* Play Button Indicator */}
-        {game.game_url && (
-          <div className="absolute top-3 right-3">
-            <div className="w-8 h-8 rounded-full bg-gaming-orange flex items-center justify-center">
-              <ExternalLink className="w-4 h-4 text-background" />
-            </div>
-          </div>
-        )}
+        {/* Action Buttons */}
+        <div className="absolute bottom-3 right-3 flex gap-2">
+          <button
+            onClick={handleBookmark}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+              isBookmarked 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-background/80 backdrop-blur-sm text-foreground hover:bg-background'
+            }`}
+            title="Bookmark"
+          >
+            <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+          </button>
+          <button
+            onClick={handleFavorite}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+              isFavorited 
+                ? 'bg-red-500 text-white' 
+                : 'bg-background/80 backdrop-blur-sm text-foreground hover:bg-background'
+            }`}
+            title="Favorite"
+          >
+            <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
+          </button>
+        </div>
       </div>
       
       {/* Info */}

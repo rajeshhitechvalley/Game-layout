@@ -1,9 +1,11 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import type { Game } from '@/types';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GameGrid from '@/components/GameGrid';
-import { Clock, TrendingUp, Gamepad2, Users, Star, Play, Maximize2, Minimize2 } from 'lucide-react';
+import Notifications from '@/components/Notifications';
+import Toaster, { showToast } from '@/components/Toaster';
+import { Clock, TrendingUp, Gamepad2, Users, Star, Play, Maximize2, Minimize2, Bookmark, Heart, Share2 } from 'lucide-react';
 import { useState } from 'react';
 
 interface GamePlayProps {
@@ -15,6 +17,78 @@ interface GamePlayProps {
 
 export default function GamePlay({ game, recentGames = [], suggestedGames = [], trendingGames = [] }: GamePlayProps) {
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(game.is_bookmarked || false);
+    const [isFavorited, setIsFavorited] = useState(game.is_favorited || false);
+
+    const handleBookmark = async () => {
+        try {
+            if (isBookmarked) {
+                // Remove bookmark
+                await router.delete(`/bookmarks/${game.id}`, {
+                    onSuccess: () => {
+                        setIsBookmarked(false);
+                        showToast('unbookmark', 'Removed from bookmarks', game.title);
+                    },
+                    onError: (errors: any) => {
+                        console.error('Error removing bookmark:', errors);
+                    }
+                });
+            } else {
+                // Add bookmark
+                await router.post('/bookmarks', {
+                    game_id: game.id,
+                    category: 'general',
+                    notes: '',
+                }, {
+                    onSuccess: () => {
+                        setIsBookmarked(true);
+                        showToast('bookmark', 'Added to bookmarks', game.title);
+                    },
+                    onError: (errors: any) => {
+                        console.error('Error bookmarking game:', errors);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error bookmarking game:', error);
+        }
+    };
+
+    const handleFavorite = async () => {
+        try {
+            await router.post('/favorites/toggle', {
+                game_id: game.id,
+            }, {
+                onSuccess: (response: any) => {
+                    const favorited = response.props.favorited;
+                    setIsFavorited(favorited);
+                    if (favorited) {
+                        showToast('favorite', 'Added to favorites', game.title);
+                    } else {
+                        showToast('unfavorite', 'Removed from favorites', game.title);
+                    }
+                },
+                onError: (errors: any) => {
+                    console.error('Error toggling favorite:', errors);
+                }
+            });
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+        }
+    };
+
+    const handleShare = () => {
+        if (navigator.share) {
+            navigator.share({
+                title: game.title,
+                text: `Check out this game: ${game.title}`,
+                url: window.location.href,
+            });
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Game link copied to clipboard!');
+        }
+    };
     if (!game.game_url) {
         return (
             <>
@@ -218,12 +292,33 @@ export default function GamePlay({ game, recentGames = [], suggestedGames = [], 
                                                 <Maximize2 className="w-4 h-4" />
                                                 Enter Fullscreen
                                             </button>
-                                            <button className="w-full px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors flex items-center justify-center gap-2">
-                                                <Star className="w-4 h-4" />
-                                                Add to Favorites
+                                            <button 
+                                                onClick={handleFavorite}
+                                                className={`w-full px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                                                    isFavorited 
+                                                        ? 'bg-red-500 text-white hover:bg-red-600' 
+                                                        : 'bg-muted hover:bg-muted/80'
+                                                }`}
+                                            >
+                                                <Heart className={`w-4 h-4 ${isFavorited ? 'fill-current' : ''}`} />
+                                                {isFavorited ? 'Favorited' : 'Add to Favorites'}
                                             </button>
-                                            <button className="w-full px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors flex items-center justify-center gap-2">
-                                                <Users className="w-4 h-4" />
+                                            <button 
+                                                onClick={handleBookmark}
+                                                className={`w-full px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                                                    isBookmarked 
+                                                        ? 'bg-blue-500 text-white hover:bg-blue-600' 
+                                                        : 'bg-muted hover:bg-muted/80'
+                                                }`}
+                                            >
+                                                <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                                                {isBookmarked ? 'Bookmarked' : 'Add to Bookmarks'}
+                                            </button>
+                                            <button 
+                                                onClick={handleShare}
+                                                className="w-full px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <Share2 className="w-4 h-4" />
                                                 Share Game
                                             </button>
                                         </div>
@@ -368,6 +463,7 @@ export default function GamePlay({ game, recentGames = [], suggestedGames = [], 
                     </div>
                 </div>
             )}
+            <Notifications />
         </>
     );
 }

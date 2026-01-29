@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Models\Bookmark;
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -40,6 +42,20 @@ class GameController extends Controller
         }
         
         $games = $query->paginate(12);
+
+        // Add bookmark and favorite status for authenticated users
+        if (auth()->check()) {
+            $userId = auth()->id();
+            $games->getCollection()->transform(function ($game) use ($userId) {
+                $game->is_bookmarked = Bookmark::where('user_id', $userId)
+                                              ->where('game_id', $game->id)
+                                              ->exists();
+                $game->is_favorited = Favorite::where('user_id', $userId)
+                                              ->where('game_id', $game->id)
+                                              ->exists();
+                return $game;
+            });
+        }
 
         return Inertia::render('Games/Index', [
             'games' => $games,
@@ -189,6 +205,48 @@ class GameController extends Controller
             ->orderBy('plays', 'desc')
             ->take(6)
             ->get();
+        
+        // Add bookmark and favorite status for authenticated users
+        if (auth()->check()) {
+            $userId = auth()->id();
+            $game->is_bookmarked = Bookmark::where('user_id', $userId)
+                                          ->where('game_id', $game->id)
+                                          ->exists();
+            $game->is_favorited = Favorite::where('user_id', $userId)
+                                          ->where('game_id', $game->id)
+                                          ->exists();
+            
+            // Also add status to related games
+            $recentGames->transform(function ($game) use ($userId) {
+                $game->is_bookmarked = Bookmark::where('user_id', $userId)
+                                              ->where('game_id', $game->id)
+                                              ->exists();
+                $game->is_favorited = Favorite::where('user_id', $userId)
+                                              ->where('game_id', $game->id)
+                                              ->exists();
+                return $game;
+            });
+            
+            $suggestedGames->transform(function ($game) use ($userId) {
+                $game->is_bookmarked = Bookmark::where('user_id', $userId)
+                                              ->where('game_id', $game->id)
+                                              ->exists();
+                $game->is_favorited = Favorite::where('user_id', $userId)
+                                              ->where('game_id', $game->id)
+                                              ->exists();
+                return $game;
+            });
+            
+            $trendingGames->transform(function ($game) use ($userId) {
+                $game->is_bookmarked = Bookmark::where('user_id', $userId)
+                                              ->where('game_id', $game->id)
+                                              ->exists();
+                $game->is_favorited = Favorite::where('user_id', $userId)
+                                              ->where('game_id', $game->id)
+                                              ->exists();
+                return $game;
+            });
+        }
         
         return Inertia::render('Games/Play', [
             'game' => $game,

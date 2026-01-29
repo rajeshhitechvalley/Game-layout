@@ -14,6 +14,8 @@ export interface Game {
     players: string;
     featured: boolean;
     active: boolean;
+    is_bookmarked?: boolean;
+    is_favorited?: boolean;
     created_at: string;
     updated_at: string;
 }
@@ -28,6 +30,8 @@ export interface GameCard {
     rating: number;
     plays: string;
     game_url?: string;
+    is_bookmarked?: boolean;
+    is_favorited?: boolean;
 }
 
 export interface HeroGame {

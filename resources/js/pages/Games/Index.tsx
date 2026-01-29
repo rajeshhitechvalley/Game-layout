@@ -4,6 +4,8 @@ import Header from "@/components/Header";
 import CategoryPills from "@/components/CategoryPills";
 import GameGrid from "@/components/GameGrid";
 import Footer from "@/components/Footer";
+import Notifications from "@/components/Notifications";
+import Toaster from "@/components/Toaster";
 import type { Game } from '@/types';
 import { CATEGORIES } from '@/constants/categories';
 
@@ -65,6 +67,8 @@ export default function GamesIndex({ games, sort, category }: GamesIndexProps) {
                 </main>
                 <Footer />
             </div>
+            <Notifications />
+            <Toaster />
         </>
     );
 }

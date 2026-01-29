@@ -3,6 +3,8 @@ import { AppContent } from '@/components/app-content';
 import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
+import Notifications from '@/components/Notifications';
+import Toaster from '@/components/Toaster';
 import type { AppLayoutProps } from '@/types';
 
 export default function AppSidebarLayout({
@@ -28,6 +30,8 @@ export default function AppSidebarLayout({
                     {children}
                 </div>
             </AppContent>
+            <Notifications />
+            <Toaster />
         </AppShell>
     );
 }

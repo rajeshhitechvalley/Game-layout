@@ -3,7 +3,11 @@ import type { GameCard as GameCardType } from '@/types';
 
 interface GameGridProps {
   title: string;
-  games: (GameCardType & { game_url?: string })[];
+  games: (GameCardType & { 
+    game_url?: string;
+    is_bookmarked?: boolean;
+    is_favorited?: boolean;
+  })[];
   icon?: string;
 }
 
