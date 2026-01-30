@@ -21,7 +21,10 @@ import {
     Bell,
     HelpCircle,
     ChevronDown,
-    ChevronRight
+    ChevronRight,
+    User,
+    LogIn,
+    UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -49,7 +52,7 @@ const AppSidebar = ({ className, isOpen: propIsOpen, setIsOpen: propSetIsOpen }:
         );
     };
 
-    const navigation = [
+    const navigation = auth?.user ? [
         { name: 'Dashboard', href: '/dashboard', icon: Home },
         { 
             name: 'Games', 
@@ -76,6 +79,26 @@ const AppSidebar = ({ className, isOpen: propIsOpen, setIsOpen: propSetIsOpen }:
         { name: 'Achievements', href: '/achievements', icon: Trophy },
         { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark },
         { name: 'Favorites', href: '/favorites', icon: Heart },
+    ] : [
+        { 
+            name: 'Games', 
+            icon: Gamepad2,
+            children: [
+                { name: 'All Games', href: '/games', icon: Gamepad2 },
+                { name: 'Featured', href: '/games?featured=true', icon: Star },
+                { name: 'Recent', href: '/games?recent=true', icon: Clock },
+                { name: 'Popular', href: '/games?popular=true', icon: TrendingUp },
+                { name: 'Categories', href: '/games/categories', icon: Target },
+            ]
+        },
+        { 
+            name: 'Social', 
+            icon: Users,
+            children: [
+                { name: 'Activity Feed', href: '/activity', icon: Bell },
+                { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
+            ]
+        },
     ];
 
     // Admin navigation items
@@ -151,11 +174,11 @@ const AppSidebar = ({ className, isOpen: propIsOpen, setIsOpen: propSetIsOpen }:
         <>
             {/* Sidebar */}
             <div className={cn(
-                "fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+                "fixed inset-y-0 left-0 z-50 w-64 bg-background border-r border-border transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
                 isOpen ? "translate-x-0" : "-translate-x-full",
                 className
             )}>
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col h-full bg-background">
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-border">
                         <Link href="/" className="flex items-center gap-2">
@@ -231,49 +254,81 @@ const AppSidebar = ({ className, isOpen: propIsOpen, setIsOpen: propSetIsOpen }:
 
                     {/* User Section */}
                     <div className="p-4 border-t border-border">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full gradient-bg-primary flex items-center justify-center">
-                                <span className="text-background text-sm font-bold">
-                                    {auth?.user?.name?.charAt(0)?.toUpperCase()}
-                                </span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">
-                                    {auth?.user?.name}
-                                </p>
-                                <p className="text-xs text-muted-foreground truncate">
-                                    {auth?.user?.email}
-                                </p>
-                                <div className="flex items-center gap-1 mt-1">
-                                    <div className="w-full bg-muted rounded-full h-1">
-                                        <div className="bg-gaming-orange h-1 rounded-full" style={{ width: '65%' }}></div>
+                        {auth?.user ? (
+                            // Authenticated user section
+                            <div>
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="w-10 h-10 rounded-full gradient-bg-primary flex items-center justify-center">
+                                        <span className="text-background text-sm font-bold">
+                                            {auth?.user?.name?.charAt(0)?.toUpperCase()}
+                                        </span>
                                     </div>
-                                    <span className="text-xs text-muted-foreground">65%</span>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium truncate">
+                                            {auth?.user?.name}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground truncate">
+                                            {auth?.user?.email}
+                                        </p>
+                                        <div className="flex items-center gap-1 mt-1">
+                                            <div className="w-full bg-muted rounded-full h-1">
+                                                <div className="bg-gaming-orange h-1 rounded-full" style={{ width: '65%' }}></div>
+                                            </div>
+                                            <span className="text-xs text-muted-foreground">65%</span>
+                                        </div>
+                                    </div>
                                 </div>
+                                <div className="grid grid-cols-3 gap-1 mb-3">
+                                    <button className="p-2 rounded hover:bg-muted transition-colors text-center">
+                                        <Trophy className="w-4 h-4 mx-auto mb-1 text-gaming-orange" />
+                                        <span className="text-xs">12</span>
+                                    </button>
+                                    <button className="p-2 rounded hover:bg-muted transition-colors text-center">
+                                        <Heart className="w-4 h-4 mx-auto mb-1 text-red-500" />
+                                        <span className="text-xs">8</span>
+                                    </button>
+                                    <button className="p-2 rounded hover:bg-muted transition-colors text-center">
+                                        <Star className="w-4 h-4 mx-auto mb-1 text-gaming-yellow" />
+                                        <span className="text-xs">4.8</span>
+                                    </button>
+                                </div>
+                                <Link
+                                    href="/logout"
+                                    method="post"
+                                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                    Sign Out
+                                </Link>
                             </div>
-                        </div>
-                        <div className="grid grid-cols-3 gap-1 mb-3">
-                            <button className="p-2 rounded hover:bg-muted transition-colors text-center">
-                                <Trophy className="w-4 h-4 mx-auto mb-1 text-gaming-orange" />
-                                <span className="text-xs">12</span>
-                            </button>
-                            <button className="p-2 rounded hover:bg-muted transition-colors text-center">
-                                <Heart className="w-4 h-4 mx-auto mb-1 text-red-500" />
-                                <span className="text-xs">8</span>
-                            </button>
-                            <button className="p-2 rounded hover:bg-muted transition-colors text-center">
-                                <Star className="w-4 h-4 mx-auto mb-1 text-gaming-yellow" />
-                                <span className="text-xs">4.8</span>
-                            </button>
-                        </div>
-                        <Link
-                            href="/logout"
-                            method="post"
-                            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
-                        >
-                            <LogOut className="h-4 w-4" />
-                            Sign Out
-                        </Link>
+                        ) : (
+                            // Non-authenticated user section
+                            <div className="space-y-2">
+                                <div className="text-center mb-4">
+                                    <div className="w-16 h-16 rounded-full gradient-bg-primary flex items-center justify-center mx-auto mb-2">
+                                        <User className="w-8 h-8 text-background" />
+                                    </div>
+                                    <p className="text-sm font-medium">Welcome to PlayZone</p>
+                                    <p className="text-xs text-muted-foreground">Sign in to access all features</p>
+                                </div>
+                                <Link
+                                    href="/login"
+                                    className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    <LogIn className="h-4 w-4" />
+                                    Sign In
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-muted text-muted-foreground rounded-lg font-medium hover:bg-muted/80 transition-colors"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    <UserPlus className="h-4 w-4" />
+                                    Create Account
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -281,7 +336,7 @@ const AppSidebar = ({ className, isOpen: propIsOpen, setIsOpen: propSetIsOpen }:
             {/* Mobile Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+                    className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
                     onClick={() => setIsOpen(false)}
                 />
             )}

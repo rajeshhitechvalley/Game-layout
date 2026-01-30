@@ -1,7 +1,10 @@
 import { Head } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
 import AppLayout from '@/layouts/app-layout';
-import { Bell, TrendingUp, Gamepad2, Trophy, Users } from 'lucide-react';
+import { Bell, TrendingUp, Gamepad2, Trophy, Users, Wifi, WifiOff } from 'lucide-react';
+import { useRealTimePolling } from '@/hooks/useRealTimePolling';
+import { router } from '@inertiajs/react';
 
 interface User {
     id: number;
@@ -28,6 +31,25 @@ interface ActivityPageProps {
 }
 
 export default function ActivityPage({ activities }: ActivityPageProps) {
+    const { data: realTimeActivities, isConnected } = useRealTimePolling(
+        async () => {
+            const response = await fetch('/activity/data');
+            const result = await response.json();
+            return result.data || [];
+        },
+        activities.data,
+        { interval: 5000, enabled: true }
+    );
+    
+    const [showNewActivityNotification, setShowNewActivityNotification] = useState(false);
+
+    useEffect(() => {
+        if (realTimeActivities.length > activities.data.length && isConnected) {
+            setShowNewActivityNotification(true);
+            setTimeout(() => setShowNewActivityNotification(false), 3000);
+        }
+    }, [realTimeActivities.length, activities.data.length, isConnected]);
+
     const getActivityIcon = (type: string) => {
         switch (type) {
             case 'game':
@@ -59,22 +81,51 @@ export default function ActivityPage({ activities }: ActivityPageProps) {
             <Head title="Activity Feed" />
             
             <div className="container mx-auto px-4 py-6">
+                {/* Header with Connection Status */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-2">Activity Feed</h1>
+                    <div className="flex items-center justify-between mb-2">
+                        <h1 className="text-3xl font-bold">Activity Feed</h1>
+                        <div className="flex items-center gap-2">
+                            {isConnected ? (
+                                <div className="flex items-center gap-2 text-green-600">
+                                    <Wifi className="w-4 h-4" />
+                                    <span className="text-sm">Live</span>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2 text-gray-500">
+                                    <WifiOff className="w-4 h-4" />
+                                    <span className="text-sm">Offline</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                     <p className="text-muted-foreground">See what's happening in the gaming community</p>
                 </div>
 
+                {/* New Activity Notification */}
+                {showNewActivityNotification && (
+                    <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-green-800">New activity detected!</span>
+                    </div>
+                )}
+
                 {/* Activity Feed */}
                 <div className="space-y-4">
-                    {activities.data.length === 0 ? (
+                    {realTimeActivities.length === 0 ? (
                         <div className="text-center py-12">
                             <TrendingUp className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
                             <h3 className="text-lg font-medium mb-2">No recent activity</h3>
                             <p className="text-muted-foreground">Be the first to start playing and earning achievements!</p>
                         </div>
                     ) : (
-                        activities.data.map((activity) => (
-                            <div key={activity.id} className="flex items-start gap-4 p-4 border border-border rounded-lg">
+                        realTimeActivities.map((activity: Activity, index: number) => (
+                            <div 
+                                key={activity.id} 
+                                className={`flex items-start gap-4 p-4 border border-border rounded-lg transition-all ${
+                                    index < 3 && isConnected ? 'animate-pulse' : ''
+                                }`}
+                            >
                                 <div className={`p-2 rounded-full ${getActivityColor(activity.type)}`}>
                                     {getActivityIcon(activity.type)}
                                 </div>
@@ -91,6 +142,9 @@ export default function ActivityPage({ activities }: ActivityPageProps) {
                                         <span className="text-sm text-muted-foreground">
                                             {new Date(activity.created_at).toLocaleDateString()}
                                         </span>
+                                        {index === 0 && isConnected && (
+                                            <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">New</span>
+                                        )}
                                     </div>
                                     <p className="text-sm">{activity.description}</p>
                                     

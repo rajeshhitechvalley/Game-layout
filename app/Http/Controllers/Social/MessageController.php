@@ -62,6 +62,18 @@ class MessageController extends Controller
     {
         $authUser = auth()->user();
         
+        // Debug: Log the user IDs
+        \Log::info('Conversation accessed', [
+            'auth_user_id' => $authUser ? $authUser->id : 'null',
+            'target_user_id' => $user->id,
+            'target_user_name' => $user->name
+        ]);
+        
+        if (!$authUser) {
+            \Log::warning('Unauthenticated user tried to access conversation');
+            return redirect('/login');
+        }
+        
         // Get messages between the two users
         $messages = Message::with(['sender', 'receiver'])
             ->where(function($query) use ($authUser, $user) {
@@ -92,6 +104,42 @@ class MessageController extends Controller
                 'email' => $user->email,
                 'avatar' => $user->avatar_url ?? null,
             ],
+        ]);
+    }
+
+    public function poll(User $user)
+    {
+        $authUser = auth()->user();
+        
+        if (!$authUser) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        
+        // Get messages between the two users
+        $messages = Message::with(['sender', 'receiver'])
+            ->where(function($query) use ($authUser, $user) {
+                $query->where('sender_id', $authUser->id)
+                      ->where('receiver_id', $user->id);
+            })
+            ->orWhere(function($query) use ($authUser, $user) {
+                $query->where('sender_id', $user->id)
+                      ->where('receiver_id', $authUser->id);
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // Mark messages as read
+        Message::where('sender_id', $user->id)
+               ->where('receiver_id', $authUser->id)
+               ->where('is_read', false)
+               ->update([
+                   'is_read' => true,
+                   'read_at' => now(),
+               ]);
+
+        return response()->json([
+            'messages' => $messages,
+            'timestamp' => now()->toISOString()
         ]);
     }
 

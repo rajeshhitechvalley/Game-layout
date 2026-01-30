@@ -20,6 +20,22 @@ class ActivityController extends Controller
         ]);
     }
 
+    /**
+     * Get activity data for real-time polling
+     */
+    public function getData(Request $request)
+    {
+        $activities = Activity::with(['user', 'subject'])
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        return response()->json([
+            'data' => $activities,
+            'timestamp' => now()->toISOString()
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -30,13 +46,21 @@ class ActivityController extends Controller
             'data' => 'nullable|array',
         ]);
 
-        Activity::create([
+        $activity = Activity::create([
             'user_id' => auth()->id(),
             'type' => $request->type,
             'action' => $request->action,
             'subject_type' => $request->subject_type,
             'subject_id' => $request->subject_id,
             'data' => $request->data ?? [],
+        ]);
+
+        // Broadcast the new activity
+        \Log::info('New activity created for real-time updates', [
+            'activity_id' => $activity->id,
+            'user_id' => auth()->id(),
+            'type' => $request->type,
+            'action' => $request->action
         ]);
 
         return back()->with('success', 'Activity logged!');

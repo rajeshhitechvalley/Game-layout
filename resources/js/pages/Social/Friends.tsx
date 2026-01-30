@@ -2,7 +2,9 @@ import { Head } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
-import { Users, UserPlus, Check, X, Search } from 'lucide-react';
+import { Users, UserPlus, Check, X, Search, Wifi, WifiOff } from 'lucide-react';
+import { useRealTimeFriends } from '@/hooks/useRealTimeFriends';
+import UserSearch from '@/components/UserSearch';
 
 interface User {
     id: number;
@@ -21,18 +23,34 @@ interface FriendsPageProps {
 }
 
 export default function FriendsPage({ friends, pendingRequests, sentRequests }: FriendsPageProps) {
+    const { 
+        friends: realTimeFriends, 
+        pendingRequests: realTimePending, 
+        sentRequests: realTimeSent, 
+        isConnected 
+    } = useRealTimeFriends({ friends, pendingRequests, sentRequests });
+    
     const [activeTab, setActiveTab] = useState<'friends' | 'pending' | 'sent'>('friends');
     const [searchQuery, setSearchQuery] = useState('');
+    const [showNewRequestNotification, setShowNewRequestNotification] = useState(false);
 
-    const filteredFriends = friends.filter(friend =>
+    // Show notification for new friend requests
+    useState(() => {
+        if (realTimePending.length > pendingRequests.length && isConnected) {
+            setShowNewRequestNotification(true);
+            setTimeout(() => setShowNewRequestNotification(false), 5000);
+        }
+    });
+
+    const filteredFriends = realTimeFriends.filter(friend =>
         friend.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const filteredPending = pendingRequests.filter(request =>
+    const filteredPending = realTimePending.filter(request =>
         request.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const filteredSent = sentRequests.filter(request =>
+    const filteredSent = realTimeSent.filter(request =>
         request.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -41,23 +59,43 @@ export default function FriendsPage({ friends, pendingRequests, sentRequests }: 
             <Head title="Friends" />
             
             <div className="container mx-auto px-4 py-6">
+                {/* Header with Connection Status */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-2">Friends</h1>
+                    <div className="flex items-center justify-between mb-2">
+                        <h1 className="text-3xl font-bold">Friends</h1>
+                        <div className="flex items-center gap-2">
+                            {isConnected ? (
+                                <div className="flex items-center gap-2 text-green-600">
+                                    <Wifi className="w-4 h-4" />
+                                    <span className="text-sm">Live</span>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2 text-gray-500">
+                                    <WifiOff className="w-4 h-4" />
+                                    <span className="text-sm">Offline</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                     <p className="text-muted-foreground">Connect and play with friends</p>
                 </div>
 
+                {/* New Friend Request Notification */}
+                {showNewRequestNotification && (
+                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+                        <UserPlus className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm text-blue-800">New friend request received!</span>
+                    </div>
+                )}
+
                 {/* Search Bar */}
                 <div className="mb-6">
-                    <div className="relative max-w-md">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                        <input
-                            type="text"
-                            placeholder="Search friends..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                        />
-                    </div>
+                    <UserSearch 
+                        onUserSelect={(user) => {
+                            // Navigate to conversation with selected user
+                            window.location.href = `/messages/${user.id}`;
+                        }}
+                    />
                 </div>
 
                 {/* Tabs */}
@@ -71,7 +109,7 @@ export default function FriendsPage({ friends, pendingRequests, sentRequests }: 
                                     : 'border-transparent text-muted-foreground hover:text-foreground'
                             }`}
                         >
-                            Friends ({friends.length})
+                            Friends ({realTimeFriends.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('pending')}
@@ -81,7 +119,7 @@ export default function FriendsPage({ friends, pendingRequests, sentRequests }: 
                                     : 'border-transparent text-muted-foreground hover:text-foreground'
                             }`}
                         >
-                            Pending ({pendingRequests.length})
+                            Pending ({realTimePending.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('sent')}
@@ -91,7 +129,7 @@ export default function FriendsPage({ friends, pendingRequests, sentRequests }: 
                                     : 'border-transparent text-muted-foreground hover:text-foreground'
                             }`}
                         >
-                            Sent ({sentRequests.length})
+                            Sent ({realTimeSent.length})
                         </button>
                     </div>
                 </div>

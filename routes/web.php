@@ -139,8 +139,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/messages', [\App\Http\Controllers\Social\MessageController::class, 'index'])->name('messages.index');
         Route::get('/messages/{user}', [\App\Http\Controllers\Social\MessageController::class, 'show'])->name('messages.show');
         Route::post('/messages/{user}', [\App\Http\Controllers\Social\MessageController::class, 'store'])->name('messages.store');
+        Route::get('/messages/{user}/poll', [\App\Http\Controllers\Social\MessageController::class, 'poll'])->name('messages.poll');
+        Route::post('/messages', [\App\Http\Controllers\Social\MessageController::class, 'store'])->name('messages.store');
         
         Route::get('/activity', [\App\Http\Controllers\Social\ActivityController::class, 'index'])->name('activity.index');
+        Route::get('/activity/data', [\App\Http\Controllers\Social\ActivityController::class, 'getData'])->name('activity.data');
         Route::post('/activity', [\App\Http\Controllers\Social\ActivityController::class, 'store'])->name('activity.store');
         
         Route::get('/leaderboard', [\App\Http\Controllers\Social\LeaderboardController::class, 'index'])->name('leaderboard.index');
@@ -168,8 +171,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Legacy routes for backward compatibility (auth only, no email verification required)
 Route::middleware(['auth'])->group(function () {
     Route::get('/friends', [\App\Http\Controllers\Social\FriendController::class, 'index'])->name('friends');
+    Route::post('/friends', [\App\Http\Controllers\Social\FriendController::class, 'store'])->name('friends.store');
+    Route::post('/friends/{friend}/accept', [\App\Http\Controllers\Social\FriendController::class, 'accept'])->name('friends.accept');
+    Route::post('/friends/{friend}/reject', [\App\Http\Controllers\Social\FriendController::class, 'reject'])->name('friends.reject');
+    Route::delete('/friends/{friend}', [\App\Http\Controllers\Social\FriendController::class, 'destroy'])->name('friends.destroy');
+    
     Route::get('/messages', [\App\Http\Controllers\Social\MessageController::class, 'index'])->name('messages');
+    Route::get('/messages/{user}', [\App\Http\Controllers\Social\MessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/{user}', [\App\Http\Controllers\Social\MessageController::class, 'store'])->name('messages.store');
+    Route::get('/messages/{user}/poll', [\App\Http\Controllers\Social\MessageController::class, 'poll'])->name('messages.poll');
+    
     Route::get('/activity', [\App\Http\Controllers\Social\ActivityController::class, 'index'])->name('activity');
+    Route::get('/activity/data', [\App\Http\Controllers\Social\ActivityController::class, 'getData'])->name('activity.data');
     Route::get('/leaderboard', [\App\Http\Controllers\Social\LeaderboardController::class, 'index'])->name('leaderboard');
     Route::get('/achievements', [\App\Http\Controllers\Profile\AchievementController::class, 'index'])->name('achievements');
     Route::get('/bookmarks', [\App\Http\Controllers\Profile\BookmarkController::class, 'index'])->name('bookmarks');
@@ -183,7 +196,30 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/favorites/toggle', [\App\Http\Controllers\Profile\FavoriteController::class, 'toggle'])->name('favorites.toggle');
 });
 
+// WebSocket routes for real-time functionality
+Route::middleware(['auth'])->group(function () {
+    Route::get('/ws/{channel}', [App\Http\Controllers\WebSocketController::class, 'handleWebSocket'])->name('websocket.connect');
+    Route::post('/broadcast/activity', [App\Http\Controllers\WebSocketController::class, 'broadcastActivity'])->name('broadcast.activity');
+    Route::post('/broadcast/friend-request', [App\Http\Controllers\WebSocketController::class, 'broadcastFriendRequest'])->name('broadcast.friend-request');
+    Route::post('/broadcast/message', [App\Http\Controllers\WebSocketController::class, 'broadcastMessage'])->name('broadcast.message');
+    Route::post('/broadcast/online-status', [App\Http\Controllers\WebSocketController::class, 'broadcastOnlineStatus'])->name('broadcast.online-status');
+});
+
+// API routes
+Route::middleware(['auth'])->prefix('api')->name('api.')->group(function () {
+    Route::get('/users/search', [\App\Http\Controllers\Api\UserController::class, 'search'])->name('users.search');
+});
+
 require __DIR__.'/settings.php';
 
 // Test route for social features
 Route::middleware(['auth'])->get('/test-social', [App\Http\Controllers\TestController::class, 'index'])->name('test.social');
+
+// Test conversation route
+Route::middleware(['auth'])->get('/test-conversation/{user}', function($user) {
+    return response()->json([
+        'user_id' => $user->id,
+        'user_name' => $user->name,
+        'auth_user' => auth()->user() ? auth()->user()->id : 'not authenticated'
+    ]);
+});

@@ -10,11 +10,11 @@ interface AppContentProps {
 const AppContent = ({ children, className, variant = 'default' }: AppContentProps) => {
     return (
         <main className={cn(
-            "flex-1 overflow-auto",
+            "flex-1 overflow-auto bg-background",
             variant === 'sidebar' && "min-w-0",
             className
         )}>
-            <div className="h-full">
+            <div className="h-full bg-background">
                 {children}
             </div>
         </main>

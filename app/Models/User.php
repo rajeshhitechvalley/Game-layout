@@ -25,6 +25,8 @@ class User extends Authenticatable
         'email',
         'password',
         'is_admin',
+        'avatar_url',
+        'is_online',
     ];
 
     /**
@@ -51,6 +53,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'is_admin' => 'boolean',
+            'is_online' => 'boolean',
         ];
     }
 

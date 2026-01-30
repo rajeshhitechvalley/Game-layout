@@ -1,15 +1,23 @@
-import { Search, Gamepad2, Menu, X, Home, Trophy, Grid3X3 } from "lucide-react";
+import { Search, Gamepad2, Menu, X, Home, Trophy, Grid3X3, LayoutDashboard, User2Icon, UserCircle } from "lucide-react";
 import { useState } from "react";
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { auth } = usePage().props as any;
 
-  const navigationItems = [
+  const navigationItems = auth?.user ? [
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Home", href: "/", icon: Home },
     { name: "Games", href: "/games", icon: Grid3X3 },
     { name: "Trending", href: "/games?sort=trending", icon: Trophy },
+  ] : [
+    { name: "Home", href: "/", icon: Home },
+    { name: "Games", href: "/games", icon: Grid3X3 },
+    { name: "Trending", href: "/games?sort=trending", icon: Trophy },
+    { name: "Login", href: "/login", icon: UserCircle },
+    { name: "Register", href: "/register", icon: User2Icon },
   ];
 
   const handleSearch = (e: React.FormEvent) => {

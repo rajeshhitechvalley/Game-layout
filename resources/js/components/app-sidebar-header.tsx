@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
-import { Menu, Bell, User, ChevronRight, X } from 'lucide-react';
+import { Menu, Bell, User, ChevronRight, X, LogIn, UserPlus } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 
 interface BreadcrumbItem {
@@ -72,21 +72,42 @@ const AppSidebarHeader = ({
 
                     {/* Right side - Notifications and user menu */}
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="sm">
-                            <Bell className="h-4 w-4" />
-                        </Button>
-                        
-                        <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-full gradient-bg-primary flex items-center justify-center">
-                                <User className="h-4 w-4 text-background" />
-                            </div>
-                            <div className="hidden sm:block">
-                                <p className="text-sm font-medium">{auth?.user?.name}</p>
-                                <p className="text-xs text-muted-foreground">
-                                    {auth?.user?.is_admin ? 'Administrator' : 'User'}
-                                </p>
-                            </div>
-                        </div>
+                        {auth?.user ? (
+                            // Authenticated user section
+                            <>
+                                <Button variant="ghost" size="sm">
+                                    <Bell className="h-4 w-4" />
+                                </Button>
+                                
+                                <div className="flex items-center gap-2">
+                                    <div className="h-8 w-8 rounded-full gradient-bg-primary flex items-center justify-center">
+                                        <User className="h-4 w-4 text-background" />
+                                    </div>
+                                    <div className="hidden sm:block">
+                                        <p className="text-sm font-medium">{auth?.user?.name}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {auth?.user?.is_admin ? 'Administrator' : 'User'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            // Non-authenticated user section
+                            <>
+                                <Link href="/login">
+                                    <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                                        <LogIn className="h-4 w-4" />
+                                        <span className="hidden sm:inline">Sign In</span>
+                                    </Button>
+                                </Link>
+                                <Link href="/register">
+                                    <Button size="sm" className="flex items-center gap-2">
+                                        <UserPlus className="h-4 w-4" />
+                                        <span className="hidden sm:inline">Sign Up</span>
+                                    </Button>
+                                </Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

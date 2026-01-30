@@ -64,4 +64,22 @@ class Activity extends Model
                 return $this->action;
         }
     }
+
+    /**
+     * Create a new activity and broadcast it.
+     */
+    public static function createAndBroadcast($data)
+    {
+        $activity = self::create($data);
+        
+        // Broadcast to WebSocket clients
+        // In production, this would use a proper WebSocket service
+        \Log::info('Activity created and should be broadcasted', [
+            'activity_id' => $activity->id,
+            'type' => 'new_activity',
+            'data' => $activity->load('user')
+        ]);
+        
+        return $activity;
+    }
 }
